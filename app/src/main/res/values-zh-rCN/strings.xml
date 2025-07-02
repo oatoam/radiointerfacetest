@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Radio测试</string>
+    <string name="setup_info">点击 “配置” 按钮以配置必要权限</string>
+    <string name="setup_ok">权限配置完成，可以进行后续操作</string>
+    <string name="setup_fail">权限配置失败</string>
+    <string name="btn_txt_setup">配置</string>
+    <string name="btn_txt_dial">呼叫</string>
+    <string name="btn_txt_accept">接听当前响铃通话</string>
+    <string name="btn_txt_hangup">挂断当前通话</string>
+    <string name="btn_txt_decline">拒接当前响铃通话</string>
+    <string name="btn_txt_sendsms">发送短信</string>
+    <string name="btn_txt_receivesms">接收短信</string>
+    <string name="btn_txt_senddata">发送数据</string>
+    <string name="remote_number_info">测试对端号码：</string>
+    <string name="sms_view_info">收到的短信：</string>
+    <string name="sms_input_info">测试短信内容：</string>
+
+    <string name="remote_ip_info">测试远程IP：</string>
+</resources>

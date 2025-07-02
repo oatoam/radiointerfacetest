@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">RadioInterfaceTest</string>
+
+    <string name="setup_info">Click \'Setup\' button to setup all necessary permissions</string>
+    <string name="setup_ok">Setup done, ready to process!</string>
+    <string name="setup_fail">Setup failed!</string>
+    <string name="btn_txt_setup">Setup</string>
+    <string name="btn_txt_dial">Dial</string>
+    <string name="btn_txt_accept">Accept Ringing Call</string>
+    <string name="btn_txt_hangup">Hangup</string>
+    <string name="btn_txt_decline">Decline Ringing Call</string>
+    <string name="btn_txt_sendsms">Send SMS</string>
+    <string name="btn_txt_receivesms">Receive SMS</string>
+    <string name="btn_txt_senddata">Send Data</string>
+    <string name="remote_number_info">Remote number for test:</string>
+    <string name="sms_view_info">Received SMS messages:</string>
+    <string name="sms_input_info">Sms text for test:</string>
+    <string name="remote_ip_info">Remote IP for test:</string>
+
+</resources>
