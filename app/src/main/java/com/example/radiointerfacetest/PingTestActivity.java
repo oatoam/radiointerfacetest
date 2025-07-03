@@ -27,12 +27,8 @@ public class PingTestActivity extends AppCompatActivity {
 
     private final String TAG = PingTestActivity.class.getName();
 
-    EditText ipET;
+    InputWithHistoryAndClear inputRemoteIpComponent;
     Button pingBtn;
-
-    Spinner ipSpinner;
-    private ArrayAdapter<String> ipSpinnerAdapter;
-    private List<String> ipSpinnerList;
 
     Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -40,9 +36,7 @@ public class PingTestActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             int id = v.getId();
-            if (id == R.id.btn_clear_ip) {
-                ipET.setText("");
-            } else if (id == R.id.btn_ping) {
+            if (id == R.id.btn_ping) {
                 ping();
             }
         }
@@ -52,19 +46,20 @@ public class PingTestActivity extends AppCompatActivity {
         @Override
         public boolean onLongClick(View v) {
             int id = v.getId();
-            if (id == R.id.btn_clear_ip) {
-                Dialog dialog = new android.app.AlertDialog.Builder(PingTestActivity.this)
-                    .setTitle("Clear History")
-                    .setMessage("Are you sure you want to clear all IP history?")
-                    .setPositiveButton("Yes", (dialogInterface, i) -> {
-                        InputHistoryCache numberCache = InputHistoryCache.getInstance(PingTestActivity.this);
-                        numberCache.clear(InputHistoryCache.KEY_IP);
-                        Toast.makeText(PingTestActivity.this, "IP history cleared", Toast.LENGTH_LONG).show();
-                    })
-                    .setNegativeButton("No", null)
-                    .create();
-                dialog.show();
-            }
+//            if (id == R.id.btn_clear_ip) { // This button is now part of the custom component, but long click is still handled here
+//                Dialog dialog = new android.app.AlertDialog.Builder(PingTestActivity.this)
+//                    .setTitle("Clear History")
+//                    .setMessage("Are you sure you want to clear all IP history?")
+//                    .setPositiveButton("Yes", (dialogInterface, i) -> {
+//                        InputHistoryCache numberCache = InputHistoryCache.getInstance(PingTestActivity.this);
+//                        numberCache.clear(InputHistoryCache.KEY_IP);
+//                        Toast.makeText(PingTestActivity.this, "IP history cleared", Toast.LENGTH_LONG).show();
+//                        inputRemoteIpComponent.setText(""); // Clear the text in the component
+//                    })
+//                    .setNegativeButton("No", null)
+//                    .create();
+//                dialog.show();
+//            }
             return true;
         }
     };
@@ -80,47 +75,17 @@ public class PingTestActivity extends AppCompatActivity {
             return insets;
         });
 
-        ipET = findViewById(R.id.remote_ip);
+        inputRemoteIpComponent = findViewById(R.id.input_remote_ip_component);
         pingBtn = findViewById(R.id.btn_ping);
 
-        findViewById(R.id.btn_clear_ip).setOnClickListener(mClickListener);
-        findViewById(R.id.btn_clear_ip).setOnLongClickListener(mLongClickListener);
+        // The clear button is now part of the custom component, its click listener is handled internally
+        // We only keep the long click listener for clearing history
         pingBtn.setOnClickListener(mClickListener);
 
-        ipSpinner = findViewById(R.id.spinner_ip);
-        InputHistoryCache numberCache = InputHistoryCache.getInstance(this);
-        ipSpinnerList = numberCache.getAll(InputHistoryCache.KEY_IP);
-        ipSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, ipSpinnerList);
-        ipSpinner.setAdapter(ipSpinnerAdapter);
-
-        numberCache.addListener(() -> {
-            Log.d(TAG, "cached number changed");
-
-            mainHandler.post(()->{
-                List<String> caches = numberCache.getAll(InputHistoryCache.KEY_IP);
-                ipSpinnerList.clear();
-                for (String number : caches) {
-                    ipSpinnerList.add(number);
-                }
-//                numberSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, numberSpinnerList);
-//                numberSpinner.setAdapter(numberSpinnerAdapter);
-                ipSpinnerAdapter.notifyDataSetChanged();
-            });
-        });
-
-        ipSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // 获取选择的项目
-                String selectedItem = ipSpinnerList.get(position);
-//                Toast.makeText(MainActivity.this, "选择了: " + selectedItem, Toast.LENGTH_SHORT).show();
-                ipET.setText(selectedItem);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // 没有选择任何项目
-            }
-        });
+        inputRemoteIpComponent.setHistoryCacheKey(InputHistoryCache.KEY_IP);
+        inputRemoteIpComponent.setHint(getString(R.string.remote_ip_info));
+        inputRemoteIpComponent.setInputType(android.text.InputType.TYPE_CLASS_PHONE); // Assuming IP is entered as phone number type
+        inputRemoteIpComponent.setText("127.0.0.1"); // Set default value
     }
 
     @Override
@@ -149,11 +114,12 @@ public class PingTestActivity extends AppCompatActivity {
     boolean mRequestExit;
 
     void ping() {
-        String ip = ipET.getText().toString();
+        String ip = inputRemoteIpComponent.getText();
         if (!isValidIPv4(ip)) {
             Toast.makeText(this, "Invalid IP address", Toast.LENGTH_SHORT).show();
             return;
         }
+        inputRemoteIpComponent.saveHistory();
 
         synchronized (PingTestActivity.this) {
             if (mCurrentPingThread != null) {
@@ -171,7 +137,7 @@ public class PingTestActivity extends AppCompatActivity {
 
             mRequestExit = false;
             mCurrentPingIP = ip;
-            InputHistoryCache.getInstance(this).add(InputHistoryCache.KEY_IP, mCurrentPingIP);
+            InputHistoryCache.getInstance(this).put(InputHistoryCache.KEY_IP, mCurrentPingIP);
             mCurrentPingThread = new Thread(() -> {
                 try {
                     Process process = Runtime.getRuntime().exec("ping " + ip);

@@ -99,7 +99,6 @@ public class TelephonyCallbackActivity extends AppCompatActivity {
                     && state == TelephonyManager.CALL_STATE_IDLE) {
                 // in call hangup
                 Log.d(TAG, "in call hangup" + " subid " + mSubId);
-                "asd".spl
             }
             if (lastCallState == TelephonyManager.CALL_STATE_RINGING
                     && state == TelephonyManager.CALL_STATE_OFFHOOK) {

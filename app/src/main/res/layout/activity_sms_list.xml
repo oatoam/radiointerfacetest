@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".SmsListActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sms_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"
+        android:layout_above="@+id/send_sms_layout" />
+
+    <LinearLayout
+        android:id="@+id/send_sms_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:padding="8dp"
+        android:background="@android:color/white">
+
+        <com.example.radiointerfacetest.InputWithHistoryAndClear
+            android:id="@+id/input_number_component"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp" />
+
+        <com.example.radiointerfacetest.InputWithHistoryAndClear
+            android:id="@+id/input_message_component"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/send_sms_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send_sms"
+                android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+
+</RelativeLayout>

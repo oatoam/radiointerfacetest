@@ -74,32 +74,10 @@
             android:layout_height="wrap_content"
             android:text="@string/remote_number_info" />
 
-        <LinearLayout
+        <com.example.radiointerfacetest.InputWithHistoryAndClear
+            android:id="@+id/input_remote_number_component"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/remote_number"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:inputType="phone"
-                android:text="10086" />
-
-            <Spinner
-                android:id="@+id/spinner_telenumber"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <Button
-                android:id="@+id/btn_clear_number"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="X" />
-        </LinearLayout>
+            android:layout_height="wrap_content" />
 
 
         <Button
@@ -147,54 +125,6 @@
             android:layout_width="0dp"
             android:layout_height="25dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sms_input_info" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/sms_input"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:inputType="text"
-                android:text="sample sms text" />
-
-            <Button
-                android:id="@+id/btn_clear_sms_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="X" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btn_sendsms"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/btn_txt_sendsms" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="5dp" />
-
-        <Button
-            android:id="@+id/btn_receivesms"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/btn_txt_receivesms"
-            android:visibility="gone" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="5dp" />
 
         <Button
             android:id="@+id/btn_senddata"
@@ -204,6 +134,14 @@
             android:text="@string/btn_txt_senddata"
             android:visibility="gone" />
 
+        <Button
+            android:id="@+id/btn_view_sms_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/btn_view_sms_list"
+            android:layout_marginTop="10dp" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -211,6 +149,7 @@
         android:layout_height="wrap_content"
         android:padding="20dp"
         android:orientation="vertical"
+        android:visibility="gone"
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">

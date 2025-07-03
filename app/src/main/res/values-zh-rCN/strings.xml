@@ -15,6 +15,30 @@
     <string name="remote_number_info">测试对端号码：</string>
     <string name="sms_view_info">收到的短信：</string>
     <string name="sms_input_info">测试短信内容：</string>
+    <string name="confirm">确认</string>
 
     <string name="remote_ip_info">测试远程IP：</string>
+    <string name="btn_view_sms_list">查看短信列表</string>
+    <string name="sms_sender">发件人: </string>
+    <string name="sms_receiver">收件人: </string>
+    <string name="sms_content">短信内容</string>
+    <string name="sms_time">时间</string>
+    <string name="sms_detail_title">短信详情</string>
+    <string name="sms_detail_sender">发件人: </string>
+    <string name="sms_detail_receiver">收件人: </string>
+    <string name="sms_detail_body">内容: </string>
+    <string name="sms_detail_time">时间: </string>
+    <string name="sms_detail_phone_number">接收手机号: </string>
+    <string name="sms_detail_sim_slot">SIM卡槽: </string>
+    <string name="sms_detail_sim_slot_unknown">未知</string>
+    <string name="toast_all_sms_loaded">所有短信已加载</string>
+    <string name="toast_new_sms_received_list_refreshed">收到新短信，列表已刷新</string>
+    <string name="notification_channel_name">短信通知</string>
+    <string name="notification_channel_description">用于显示新短信的通知</string>
+    <string name="notification_title">新短信</string>
+    <string name="enter_phone_number">输入手机号码</string>
+    <string name="enter_sms_message">输入短信内容</string>
+    <string name="send_sms">发送短信</string>
+    <string name="clear_number">清空号码</string>
+    <string name="clear_message">清空内容</string>
 </resources>

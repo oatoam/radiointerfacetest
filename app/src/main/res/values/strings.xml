@@ -16,5 +16,29 @@
     <string name="sms_view_info">Received SMS messages:</string>
     <string name="sms_input_info">Sms text for test:</string>
     <string name="remote_ip_info">Remote IP for test:</string>
+    <string name="confirm">Confirm</string>
 
+    <string name="btn_view_sms_list">View SMS List</string>
+    <string name="sms_sender">Received From: </string>
+    <string name="sms_receiver">Sent To: </string>
+    <string name="sms_content">SMS Content</string>
+    <string name="sms_time">Time</string>
+    <string name="sms_detail_title">SMS Details</string>
+    <string name="sms_detail_sender">Received From: </string>
+    <string name="sms_detail_receiver">Sent To: </string>
+    <string name="sms_detail_body">Content: </string>
+    <string name="sms_detail_time">Time: </string>
+    <string name="sms_detail_phone_number">Receiving Phone Number: </string>
+    <string name="sms_detail_sim_slot">SIM Slot: </string>
+    <string name="sms_detail_sim_slot_unknown">Unknown</string>
+    <string name="toast_all_sms_loaded">All SMS loaded</string>
+    <string name="toast_new_sms_received_list_refreshed">New SMS received, list refreshed</string>
+    <string name="notification_channel_name">SMS Notification</string>
+    <string name="notification_channel_description">Notification for new SMS messages</string>
+    <string name="notification_title">New SMS</string>
+    <string name="enter_phone_number">Enter Phone Number</string>
+    <string name="enter_sms_message">Enter SMS Message</string>
+    <string name="send_sms">Send SMS</string>
+    <string name="clear_number">Clear Number</string>
+    <string name="clear_message">Clear Message</string>
 </resources>

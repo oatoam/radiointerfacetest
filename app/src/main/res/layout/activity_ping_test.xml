@@ -25,24 +25,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-                <EditText
-                    android:id="@+id/remote_ip"
-                    android:layout_width="0dp"
-                    android:layout_weight="3"
-                    android:layout_height="wrap_content"
-                    android:inputType="phone"
-                    android:text="127.0.0.1"/>
-                <Spinner
-                    android:id="@+id/spinner_ip"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                <com.example.radiointerfacetest.InputWithHistoryAndClear
+                    android:id="@+id/input_remote_ip_component"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/btn_clear_ip"
-                    android:text="X" />
             </LinearLayout>
 
             <Button

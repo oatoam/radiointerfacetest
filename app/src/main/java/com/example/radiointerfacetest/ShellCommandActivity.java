@@ -1,8 +1,6 @@
 package com.example.radiointerfacetest;
 
 import android.app.Dialog;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,12 +28,8 @@ public class ShellCommandActivity extends AppCompatActivity {
 
     private final String TAG = ShellCommandActivity.class.getName();
 
-    EditText shellET;
+    InputWithHistoryAndClear inputShellCommandComponent;
     Button executeBtn;
-
-    Spinner shellSpinner;
-    private ArrayAdapter<String> shellSpinnerAdapter;
-    private List<String> shellSpinnerList;
 
     Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -43,34 +37,12 @@ public class ShellCommandActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             int id = v.getId();
-            if (id == R.id.btn_clear_shell_command) {
-                shellET.setText("");
-            } else if (id == R.id.btn_execute) {
+            if (id == R.id.btn_execute) {
                 execute();
             }
         }
     };
 
-    View.OnLongClickListener mLongClickListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(View v) {
-            int id = v.getId();
-            if (id == R.id.btn_clear_shell_command) {
-                Dialog dialog = new android.app.AlertDialog.Builder(ShellCommandActivity.this)
-                    .setTitle("Clear History")
-                    .setMessage("Are you sure you want to clear all shell command history?")
-                    .setPositiveButton("Yes", (dialogInterface, i) -> {
-                        InputHistoryCache numberCache = InputHistoryCache.getInstance(ShellCommandActivity.this);
-                        numberCache.clear(InputHistoryCache.KEY_SHELL);
-                        Toast.makeText(ShellCommandActivity.this, "shell history cleared", Toast.LENGTH_LONG).show();
-                    })
-                    .setNegativeButton("No", null)
-                    .create();
-                dialog.show();
-            }
-            return true;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,47 +55,17 @@ public class ShellCommandActivity extends AppCompatActivity {
             return insets;
         });
 
-        shellET = findViewById(R.id.input_shell_command);
+        inputShellCommandComponent = findViewById(R.id.input_shell_command_component);
         executeBtn = findViewById(R.id.btn_execute);
 
-        findViewById(R.id.btn_clear_shell_command).setOnClickListener(mClickListener);
-        findViewById(R.id.btn_clear_shell_command).setOnLongClickListener(mLongClickListener);
+        // The clear button is now part of the custom component, its click listener is handled internally
+        // We only keep the long click listener for clearing history
         executeBtn.setOnClickListener(mClickListener);
 
-        shellSpinner = findViewById(R.id.spinner_shell_command);
-        InputHistoryCache numberCache = InputHistoryCache.getInstance(this);
-        shellSpinnerList = numberCache.getAll(InputHistoryCache.KEY_SHELL);
-        shellSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, shellSpinnerList);
-        shellSpinner.setAdapter(shellSpinnerAdapter);
-
-        numberCache.addListener(() -> {
-            Log.d(TAG, "cached shell changed");
-
-            mainHandler.post(()->{
-                List<String> caches = numberCache.getAll(InputHistoryCache.KEY_SHELL);
-                shellSpinnerList.clear();
-                for (String number : caches) {
-                    shellSpinnerList.add(number);
-                }
-//                numberSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, numberSpinnerList);
-//                numberSpinner.setAdapter(numberSpinnerAdapter);
-                shellSpinnerAdapter.notifyDataSetChanged();
-            });
-        });
-
-        shellSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // 获取选择的项目
-                String selectedItem = shellSpinnerList.get(position);
-//                Toast.makeText(MainActivity.this, "选择了: " + selectedItem, Toast.LENGTH_SHORT).show();
-                shellET.setText(selectedItem);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // 没有选择任何项目
-            }
-        });
+        inputShellCommandComponent.setHistoryCacheKey(InputHistoryCache.KEY_SHELL);
+        inputShellCommandComponent.setHint("Shell Command:");
+        inputShellCommandComponent.setInputType(android.text.InputType.TYPE_CLASS_TEXT);
+        inputShellCommandComponent.setText("ls"); // Set default value
     }
 
     String mCurrentCommand;
@@ -132,11 +74,12 @@ public class ShellCommandActivity extends AppCompatActivity {
     boolean mRequestExit;
 
     void execute() {
-        String command = shellET.getText().toString();
+        String command = inputShellCommandComponent.getText();
         if (command.isBlank()) {
             Toast.makeText(this, "Invalid shell command", Toast.LENGTH_SHORT).show();
             return;
         }
+        inputShellCommandComponent.saveHistory();
 
         synchronized (ShellCommandActivity.this) {
             if (mCurrentPingThread != null) {
@@ -155,7 +98,7 @@ public class ShellCommandActivity extends AppCompatActivity {
 
             mRequestExit = false;
             mCurrentCommand = command;
-            InputHistoryCache.getInstance(this).add(InputHistoryCache.KEY_SHELL, mCurrentCommand);
+            InputHistoryCache.getInstance(this).put(InputHistoryCache.KEY_SHELL, mCurrentCommand);
             mCurrentPingThread = new Thread(() -> {
                 try {
                     mCurrentPingProcess = Runtime.getRuntime().exec(mCurrentCommand);
@@ -169,12 +112,12 @@ public class ShellCommandActivity extends AppCompatActivity {
                     Log.d(TAG, "execute: " + mCurrentCommand + "running");
                     while (!mRequestExit && mCurrentPingProcess.isAlive()) {
                         line = stdoutReader.readLine();
-                        if (line == null) { break; }
-//                        Log.d(TAG, "shell: " + line);
+                        if (line == null) { continue; }
+                        Log.d(TAG, "shell: " + line);
                         output.append(line).append("\n");
-//                        errorLine = stderrReader.read();
+//                        errorLine = stderrReader.readLine();
 //                        if (errorLine != null && !errorLine.isEmpty()) {
-//                            errorMsg.append(errorLine).append("\n");
+//                            Log.d(TAG, "errorLine: " + errorLine);
 //                        }
 
                         mainHandler.post(() -> {
@@ -185,7 +128,7 @@ public class ShellCommandActivity extends AppCompatActivity {
                             view.post(() -> view.fullScroll(ScrollView.FOCUS_DOWN));
                         });
                     }
-                    Log.d(TAG, "Execute " + mCurrentCommand + " request exit " +mRequestExit+ " or read done");
+                    Log.d(TAG, "Execute " + mCurrentCommand + " requestexit " +mRequestExit+ " exitValue " + mCurrentPingProcess.exitValue());
                     String err = errorMsg.toString();
                     if (!err.isEmpty()) { Log.e(TAG, "error: " + err); }
                     mainHandler.post(() -> {
@@ -211,9 +154,12 @@ public class ShellCommandActivity extends AppCompatActivity {
                     }
 
                 } finally {
-                    mCurrentPingProcess = null;
-                    mCurrentPingThread = null;
+                    synchronized (ShellCommandActivity.this) {
+                        mCurrentPingProcess = null;
+                        mCurrentPingThread = null;
+                    }
                     executeBtn.setText("Execute!");
+
                 }
 
             });

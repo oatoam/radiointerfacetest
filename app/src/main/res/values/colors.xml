@@ -2,4 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="highlight_color">#FFFFF0</color> <!-- 淡黄色，用于高亮 -->
+    <color name="sent_sms_background">#DCF8C6</color> <!-- 浅绿色，用于发送短信的背景 -->
+    <color name="received_sms_background">#FFFFFF</color> <!-- 白色，用于接收短信的背景 -->
 </resources>

@@ -35,6 +35,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -51,18 +52,10 @@ public class MainActivity extends AppCompatActivity {
                 decline();
             } else if (id == R.id.btn_hangup) {
                 hangup();
-            } else if (id == R.id.btn_sendsms) {
-                sendsms();
-            } else if (id == R.id.btn_receivesms) {
-                receivesms();
             } else if (id == R.id.btn_senddata) {
                 senddata();
             } else if (id == R.id.btn_setup) {
                 setup();
-            } else if (id == R.id.btn_clear_number) {
-                numberET.setText("");
-            } else if (id == R.id.btn_clear_sms_text) {
-                smsET.setText("");
             } else if (id == R.id.btn_ping_test) {
                 Intent intent = new Intent(MainActivity.this, PingTestActivity.class);
                 startActivity(intent);
@@ -71,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             } else if (id == R.id.btn_callback_test) {
                 Intent intent = new Intent(MainActivity.this, TelephonyCallbackActivity.class);
+                startActivity(intent);
+            } else if (id == R.id.btn_view_sms_list) { // 新增按钮点击事件
+                Intent intent = new Intent(MainActivity.this, SmsListActivity.class);
                 startActivity(intent);
             }
         }
@@ -85,30 +81,27 @@ public class MainActivity extends AppCompatActivity {
                 Uri uri = Uri.fromParts("package", getPackageName(), null);
                 intent.setData(uri);
                 startActivity(intent);
-            } else if (id == R.id.btn_clear_number) {
-                Dialog dialog = new android.app.AlertDialog.Builder(MainActivity.this)
-                    .setTitle("Clear History")
-                    .setMessage("Are you sure you want to clear all number history?")
-                    .setPositiveButton("Yes", (dialogInterface, i) -> {
-                        InputHistoryCache numberCache = InputHistoryCache.getInstance(MainActivity.this);
-                        numberCache.clear(InputHistoryCache.KEY_NUMBERS);
-                        Toast.makeText(MainActivity.this, "number history cleared", Toast.LENGTH_LONG).show();
-                    })
-                    .setNegativeButton("No", null)
-                    .create();
-                dialog.show();
             }
+//            else if (id == R.id.btn_clear_number) {
+//                Dialog dialog = new android.app.AlertDialog.Builder(MainActivity.this)
+//                    .setTitle("Clear History")
+//                    .setMessage("Are you sure you want to clear all number history?")
+//                    .setPositiveButton("Yes", (dialogInterface, i) -> {
+//                        InputHistoryCache numberCache = InputHistoryCache.getInstance(MainActivity.this);
+//                        numberCache.clear(InputHistoryCache.KEY_NUMBERS);
+//                        Toast.makeText(MainActivity.this, "number history cleared", Toast.LENGTH_LONG).show();
+//                        inputRemoteNumberComponent.setText(""); // Clear the text in the component
+//                    })
+//                    .setNegativeButton("No", null)
+//                    .create();
+//                dialog.show();
+//            }
             return true;
         }
     };
 
-    private Spinner numberSpinner;
-    private ArrayAdapter<String> numberSpinnerAdapter;
-    private List<String> numberSpinnerList;
-
-
-    EditText numberET;
-    EditText smsET;
+    TelecomManager telecomManager;
+    private InputWithHistoryAndClear inputRemoteNumberComponent;
 
     Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -129,81 +122,24 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_accept).setOnClickListener(mClickListener);
         findViewById(R.id.btn_decline).setOnClickListener(mClickListener);
         findViewById(R.id.btn_hangup).setOnClickListener(mClickListener);
-        findViewById(R.id.btn_sendsms).setOnClickListener(mClickListener);
-        findViewById(R.id.btn_receivesms).setOnClickListener(mClickListener);
         findViewById(R.id.btn_senddata).setOnClickListener(mClickListener);
-        findViewById(R.id.btn_clear_number).setOnClickListener(mClickListener);
-        findViewById(R.id.btn_clear_number).setOnLongClickListener(mLongClickListener);
+//        findViewById(R.id.btn_clear_number).setOnLongClickListener(mLongClickListener); // Keep long click for clearing history
 
         findViewById(R.id.btn_ping_test).setOnClickListener(mClickListener);
         findViewById(R.id.btn_shell_test).setOnClickListener(mClickListener);
         findViewById(R.id.btn_callback_test).setOnClickListener(mClickListener);
+        findViewById(R.id.btn_view_sms_list).setOnClickListener(mClickListener); // 新增
 
-        numberET = findViewById(R.id.remote_number);
-        smsET = findViewById(R.id.sms_input);
-        numberSpinner = findViewById(R.id.spinner_telenumber);
-        InputHistoryCache numberCache = InputHistoryCache.getInstance(this);
-        numberSpinnerList = numberCache.getAll(InputHistoryCache.KEY_NUMBERS);
-        numberSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, numberSpinnerList);
-        numberSpinner.setAdapter(numberSpinnerAdapter);
-
-        numberCache.addListener(() -> {
-            Log.d(TAG, "cached number changed");
-
-            mainHandler.post(()->{
-                List<String> caches = numberCache.getAll(InputHistoryCache.KEY_NUMBERS);
-                numberSpinnerList.clear();
-                for (String number : caches) {
-                    numberSpinnerList.add(number);
-                }
-//                numberSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, numberSpinnerList);
-//                numberSpinner.setAdapter(numberSpinnerAdapter);
-                numberSpinnerAdapter.notifyDataSetChanged();
-            });
-        });
-
-        numberSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // 获取选择的项目
-                String selectedItem = numberSpinnerList.get(position);
-//                Toast.makeText(MainActivity.this, "选择了: " + selectedItem, Toast.LENGTH_SHORT).show();
-                numberET.setText(selectedItem);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // 没有选择任何项目
-            }
-        });
+        inputRemoteNumberComponent = findViewById(R.id.input_remote_number_component);
+        inputRemoteNumberComponent.setHistoryCacheKey(InputHistoryCache.KEY_NUMBERS);
+        inputRemoteNumberComponent.setHint(getString(R.string.remote_number_info));
+        inputRemoteNumberComponent.setInputType(android.text.InputType.TYPE_CLASS_PHONE);
+        inputRemoteNumberComponent.setText("10086"); // Set default value
 
         telecomManager = (TelecomManager) getSystemService(Context.TELECOM_SERVICE);
 
 
-        smsReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Log.d(TAG, "onReceive: " + intent.getAction());
-                if ("SMS_RECEIVED_ACTION".equals(intent.getAction())) {
-                    Bundle[] smses = intent.getParcelableArrayExtra("sms", Bundle.class);
-                    String info = "";
-                    for (Bundle bundle : smses) {
-                        String sender = bundle.getString("sender");
-                        String message = bundle.getString("message");
-                        info += "Date: " + LocalDateTime.now() + "\nFrom: " + sender + "\nMessage: " + message + "\n";
-                        InputHistoryCache.getInstance(getApplicationContext()).
-                                add(InputHistoryCache.KEY_NUMBERS, sender);
-                    }
-
-
-                    // 更新UI以显示短信内容
-                    TextView textView = findViewById(R.id.info_view);
-                    textView.setText(info);
-                }
-            }
-        };
-
-        // 注册广播接收器
-        registerReceiver(smsReceiver, new IntentFilter("SMS_RECEIVED_ACTION"));
+        
         Log.d(TAG, "Running");
 
         updatePermissionUI();
@@ -217,13 +153,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // 取消注册广播接收器
-        unregisterReceiver(smsReceiver);
     }
-
-    private BroadcastReceiver smsReceiver;
-
-    TelecomManager telecomManager;
 
     final int PERMISSION_REQUEST_CODE = 1001;
     final String TAG = MainActivity.class.getName();
@@ -362,13 +292,13 @@ public class MainActivity extends AppCompatActivity {
         if (!checkPermission()) {
             return;
         }
-        if (numberET.getText().toString().isBlank()) {
+        if (inputRemoteNumberComponent.getText().isBlank()) {
             Toast.makeText(this, "Call dial with invalid number", Toast.LENGTH_SHORT).show();
             return;
         }
         Toast.makeText(this, "Call dial", Toast.LENGTH_SHORT).show();
 
-        Uri uri = Uri.fromParts("tel", numberET.getText().toString(), null);
+        Uri uri = Uri.fromParts("tel", inputRemoteNumberComponent.getText(), null);
         telecomManager.placeCall(uri, null);
     }
 
@@ -395,22 +325,6 @@ public class MainActivity extends AppCompatActivity {
         }
         Toast.makeText(this, "Call hangup", Toast.LENGTH_SHORT).show();
         telecomManager.endCall();
-    }
-    void sendsms() {
-        if (!checkPermission()) {
-            return;
-        }
-        Toast.makeText(this, "Call sendsms", Toast.LENGTH_SHORT).show();
-        SmsManager smsManager = SmsManager.getDefault();
-        String message = smsET.getText().toString();
-        message += LocalDateTime.now().toLocalTime().toString();
-        smsManager.sendTextMessage(numberET.getText().toString(), null, message, null, null);
-    }
-    void receivesms() {
-        if (!checkPermission()) {
-            return;
-        }
-        Toast.makeText(this, "Call receivesms, will do nothing but wait for a sms message", Toast.LENGTH_SHORT).show();
     }
     void senddata() {
         Toast.makeText(this, "Call senddata", Toast.LENGTH_SHORT).show();

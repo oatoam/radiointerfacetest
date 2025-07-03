@@ -6,7 +6,6 @@ import android.util.Log;
 import android.util.LruCache;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,11 +22,13 @@ public class InputHistoryCache {
     public static final String KEY_NUMBERS = "numbers";
     public static final String KEY_IP = "ipaddresses";
     public static final String KEY_SHELL = "shellcommands";
+    public static final String KEY_SMS_MESSAGES = "smsmessages";
 
     private static final List<String> ALL_KEYS = List.of(
-        KEY_NUMBERS, 
+        KEY_NUMBERS,
         KEY_IP,
-        KEY_SHELL
+        KEY_SHELL,
+        KEY_SMS_MESSAGES
     );
 
 //    private Set<String> mCachedNumbers = new HashSet<>();
@@ -63,7 +64,7 @@ public class InputHistoryCache {
         return instance;
     }
 
-    public void add(String key, String value) {
+    public void put(String key, String value) {
         if (key == KEY_NUMBERS && value.startsWith("tel:")) {
             value = value.substring(4);
         }

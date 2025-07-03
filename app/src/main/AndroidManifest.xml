@@ -167,6 +167,17 @@
                 <data android:scheme="mmsto" />
             </intent-filter>
         </service>
+        <activity
+            android:name=".SmsListActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.SENDTO" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

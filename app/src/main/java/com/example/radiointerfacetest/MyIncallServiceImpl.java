@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.Message;
 import android.telecom.Call;
 import android.telecom.CallAudioState;
 import android.telecom.CallEndpoint;
@@ -21,7 +20,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -182,7 +180,7 @@ public class MyIncallServiceImpl extends InCallService {
         super.onCallAdded(call);
 
         InputHistoryCache.getInstance(getApplicationContext()).
-                add(InputHistoryCache.KEY_NUMBERS, call.getDetails().getHandle().toString());
+                put(InputHistoryCache.KEY_NUMBERS, call.getDetails().getHandle().toString());
 
         DataHolderSingleton.getInstance().mCurrentCall = call;
         DataHolderSingleton.CallInfo callInfo = new DataHolderSingleton.CallInfo();
