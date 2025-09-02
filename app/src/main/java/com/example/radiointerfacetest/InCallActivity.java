@@ -27,7 +27,7 @@ import java.util.Map;
 
 public class InCallActivity extends AppCompatActivity {
 
-    private final String TAG = InCallActivity.class.getName();
+    private final String TAG = InCallActivity.class.getSimpleName();
     private Button acceptButton;
     private Button declineButton;
     private Button holdButton;
@@ -64,11 +64,13 @@ public class InCallActivity extends AppCompatActivity {
         public void onStateChanged(Call call, int state) {
             callStateText.setText(state2String(state));
 //            Log.d(TAG, "InCallActivity's onStateChanged " + state2String(state));
+            Log.d(TAG, "onStateChanged: state " + state2String(state) + ", "  + call.toString());
             updateAllCallStates();
         }
 
         @Override
         public void onCallDestroyed(Call call) {
+            Log.d(TAG, "onCallDestroyed: " + call.toString());
             super.onCallDestroyed(call);
             finish();
         }
@@ -201,6 +203,7 @@ public class InCallActivity extends AppCompatActivity {
 
     private void acceptCall() {
         // Implement call acceptance logic here
+        Log.d(TAG, "acceptCall");
         mCurrentCall.answer(0);
     }
 
@@ -219,16 +222,18 @@ public class InCallActivity extends AppCompatActivity {
     }
 
     void holdCall() {
+        Log.d(TAG, "holdCall");
         mCurrentCall.hold();
     }
 
     void unholdCall() {
+        Log.d(TAG, "unholdCall");
         mCurrentCall.unhold();
     }
 
 //    boolean microphoneMute = false;
     void toggleMicrophoneMute() {
-        Log.d(TAG, "microphoneMute");
+        Log.d(TAG, "toggleMicrophoneMute");
         CallAudioState state = DataHolderSingleton.getInstance().mCurrentCallAudioState;
         boolean microphoneMuted = state.isMuted();
 //        AudioManager audioManager = getSystemService(AudioManager.class);
@@ -245,7 +250,7 @@ public class InCallActivity extends AppCompatActivity {
     }
 
     void toggleSpeaker() {
-        Log.d(TAG, "toggleAudioRoute");
+        Log.d(TAG, "toggleSpeaker");
         CallAudioState state = DataHolderSingleton.getInstance().mCurrentCallAudioState;
 
         int route = 0;

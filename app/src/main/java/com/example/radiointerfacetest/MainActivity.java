@@ -192,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
                 case 102: info += "default Dialer APP "; break;
             }
             Toast.makeText(this, info, Toast.LENGTH_LONG).show();
+            Log.d(TAG, info);
         }
 
     }
@@ -289,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void dial() {
+        Log.d(TAG, "Call dial");
         if (!checkPermission()) {
             return;
         }
@@ -299,10 +301,12 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Call dial", Toast.LENGTH_SHORT).show();
 
         Uri uri = Uri.fromParts("tel", inputRemoteNumberComponent.getText(), null);
+        Log.d(TAG, "Call dial : " + uri.toString());
         telecomManager.placeCall(uri, null);
     }
 
     void accept() {
+        Log.d(TAG, "Call accept");
         if (!checkPermission()) {
             return;
         }
@@ -312,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void decline() {
+        Log.d(TAG, "Call decline");
         if (!checkPermission()) {
             return;
         }
@@ -320,6 +325,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void hangup() {
+        Log.d(TAG, "Call hangup");
         if (!checkPermission()) {
             return;
         }
@@ -327,6 +333,8 @@ public class MainActivity extends AppCompatActivity {
         telecomManager.endCall();
     }
     void senddata() {
+        Log.d(TAG, "Call senddata");
+
         Toast.makeText(this, "Call senddata", Toast.LENGTH_SHORT).show();
 
     }

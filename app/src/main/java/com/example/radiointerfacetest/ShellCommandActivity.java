@@ -113,7 +113,7 @@ public class ShellCommandActivity extends AppCompatActivity {
                     while (!mRequestExit && mCurrentPingProcess.isAlive()) {
                         line = stdoutReader.readLine();
                         if (line == null) { continue; }
-                        Log.d(TAG, "shell: " + line);
+//                        Log.d(TAG, "shell: " + line);
                         output.append(line).append("\n");
 //                        errorLine = stderrReader.readLine();
 //                        if (errorLine != null && !errorLine.isEmpty()) {
